@@ -1,5 +1,7 @@
 package test.controller;
 
+import java.util.Collections;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import test.model.RequestDTO;
+import test.controller.GlobalExceptionHandler.ApiCallResponse;
 import test.model.RequestExtensionDTO;
  
 @RestController
@@ -31,7 +33,7 @@ public class TestController {
 	public ResponseEntity<?> simplePostChildDTO( @RequestBody
 			@Valid RequestExtensionDTO template)
 	{
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body(new ApiCallResponse("OK",Collections.emptyList()));
 	}
 }
 

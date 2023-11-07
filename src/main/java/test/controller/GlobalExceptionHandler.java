@@ -60,9 +60,9 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(ValidationException.class)
-	public ApiCallError<String> handleValidationException(HttpServletRequest request, ValidationException ex) {
+	public ApiCallResponse<String> handleValidationException(HttpServletRequest request, ValidationException ex) {
 		log.error("ValidationException {}\n", request.getRequestURI(), ex);
-		return new ApiCallError<>("Errore di validazione", Arrays.asList(ex.getMessage()));
+		return new ApiCallResponse<>("Errore di validazione", Arrays.asList(ex.getMessage()));
 	}
 
 	/**
@@ -74,10 +74,10 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MissingServletRequestParameterException.class)
-	public ApiCallError<String> handleMissingServletRequestParameterException(HttpServletRequest request,
+	public ApiCallResponse<String> handleMissingServletRequestParameterException(HttpServletRequest request,
 			MissingServletRequestParameterException ex) {
 		log.error("handleMissingServletRequestParameterException {}\n", request.getRequestURI(), ex);
-		return new ApiCallError<>("Parametro di request mancante", Arrays.asList(ex.getMessage()));
+		return new ApiCallResponse<>("Parametro di request mancante", Arrays.asList(ex.getMessage()));
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ApiCallError<Map<String, String>> handleMethodArgumentTypeMismatchException(HttpServletRequest request,
+	public ApiCallResponse<Map<String, String>> handleMethodArgumentTypeMismatchException(HttpServletRequest request,
 			MethodArgumentTypeMismatchException ex) {
 		log.error("handleMethodArgumentTypeMismatchException {}\n", request.getRequestURI(), ex);
 		HashMap<String, String> details = new HashMap<>();
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
 		details.put("paramValue", ofNullable(ex.getValue()).map(Object::toString).orElse(""));
 		details.put("errorMessage", ex.getMessage());
 
-		return new ApiCallError<>("Tipo di argomento non valido per la richiesta", Arrays.asList(details));
+		return new ApiCallResponse<>("Tipo di argomento non valido per la richiesta", Arrays.asList(details));
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ApiCallError<Map<String, String>> handleMethodArgumentNotValidException(HttpServletRequest request,
+	public ApiCallResponse<Map<String, String>> handleMethodArgumentNotValidException(HttpServletRequest request,
 			MethodArgumentNotValidException ex) {
 		log.error("handleMethodArgumentNotValidException {}\n", request.getRequestURI(), ex);
 		final StringBuilder message = new StringBuilder("Campi non validi:\n");
@@ -134,7 +134,7 @@ public class GlobalExceptionHandler {
 			message.append(detail.get("errorMessage") + "\n");
 		});
 
-		return new ApiCallError<>(message.toString(), details);
+		return new ApiCallResponse<>(message.toString(), details);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(BindException.class)
-	public ApiCallError<Map<String, String>> handleBindException(HttpServletRequest request, BindException ex) {
+	public ApiCallResponse<Map<String, String>> handleBindException(HttpServletRequest request, BindException ex) {
 		log.error("handleBindException {}\n", request.getRequestURI(), ex);
 		final StringBuilder message = new StringBuilder("Campi non validi:\n");
 		List<Map<String, String>> details = new ArrayList<>();
@@ -161,7 +161,7 @@ public class GlobalExceptionHandler {
 			message.append(detail.get("errorMessage") + "\n");
 		});
 
-		return new ApiCallError<>(message.toString(), details);
+		return new ApiCallResponse<>(message.toString(), details);
 	}
 
 	/**
@@ -185,9 +185,9 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
-	public ApiCallError<String> handleInternalServerError(HttpServletRequest request, Exception ex) {
+	public ApiCallResponse<String> handleInternalServerError(HttpServletRequest request, Exception ex) {
 		log.error("handleInternalServerError {}\n", request.getRequestURI(), ex);
-		return new ApiCallError<>("Internal server error", Arrays.asList(ex.getMessage()));
+		return new ApiCallResponse<>("Internal server error", Arrays.asList(ex.getMessage()));
 	}
 	
  
@@ -204,10 +204,10 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MissingServletRequestPartException.class)
-	public ApiCallError<String> handleMissingServletRequestPartException(HttpServletRequest request,
+	public ApiCallResponse<String> handleMissingServletRequestPartException(HttpServletRequest request,
 			MissingServletRequestPartException ex) {
 		log.error("MissingServletRequestPartException {}\n", request.getRequestURI(), ex);
-		return new ApiCallError<>("Parte mancante", Arrays.asList(ex.getRequestPartName()));
+		return new ApiCallResponse<>("Parte mancante", Arrays.asList(ex.getRequestPartName()));
 	}
 
 //	@ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
@@ -226,14 +226,14 @@ public class GlobalExceptionHandler {
  */
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ApiCallError<String> handleWrongEnumValue(HttpServletRequest request, HttpMessageNotReadableException ex) {
+	public ApiCallResponse<String> handleWrongEnumValue(HttpServletRequest request, HttpMessageNotReadableException ex) {
 		log.error("HttpMessageNotReadableException {}\n", request.getRequestURI(), ex);
 		if (Objects.requireNonNull(ex.getMessage()).contains("model.enums")) {
-			return new ApiCallError<>("Enum non accettato",
+			return new ApiCallResponse<>("Enum non accettato",
 					Arrays.asList("Nessuno dei valori accettati per la classe Enum: ["
 							+ StringUtils.substringBetween(ex.getMessage(), "[", "]") + "]"));
 		} else {
-			return new ApiCallError<>("Richiesta non valida.", Arrays.asList(ex.getMessage()));
+			return new ApiCallResponse<>("Richiesta non valida.", Arrays.asList(ex.getMessage()));
 		}
 	}
 
@@ -246,9 +246,9 @@ public class GlobalExceptionHandler {
 	 */
 	@ResponseStatus(code = HttpStatus.FORBIDDEN)
 	@ExceptionHandler(AccessDeniedException.class)
-	public ApiCallError<String> handleAccessDeniedException(HttpServletRequest request, AccessDeniedException ex) {
+	public ApiCallResponse<String> handleAccessDeniedException(HttpServletRequest request, AccessDeniedException ex) {
 		log.error("handleAccessDeniedException {}\n", request.getRequestURI(), ex);
-		return new ApiCallError<>("Accesso negato", Arrays.asList(ex.getMessage()));
+		return new ApiCallResponse<>("Accesso negato", Arrays.asList(ex.getMessage()));
 	}
 
 	/**
@@ -270,7 +270,7 @@ public class GlobalExceptionHandler {
 	 * @param details the details
 	 */
 	@AllArgsConstructor
-	public static class ApiCallError<T> {
+	public static class ApiCallResponse<T> {
 
 		/** The message. */
 		private String message;
